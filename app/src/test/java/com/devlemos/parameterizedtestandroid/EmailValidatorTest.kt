@@ -1,57 +1,51 @@
 package com.devlemos.parameterizedtestandroid
 
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.ArgumentsProvider
+import org.junit.jupiter.params.provider.ArgumentsSource
+import java.util.stream.Stream
 
-@RunWith(Parameterized::class)
-class EmailValidatorTest(
-    private val email: String,
-    private val expected: Boolean
-){
+class EmailValidatorTest{
 
-    lateinit var emailValidator: EmailValidator
+    private lateinit var emailValidator: EmailValidator
 
-    @Before
+    @BeforeEach
     fun setUp() {
         emailValidator = EmailValidator()
     }
 
-    companion object {
-        @JvmStatic
-        @Parameterized.Parameters(
-            name = "when email is {0}, then we are getting {1}"
-        )
-        fun getValidateEmailResult(): Iterable<Array<Any>> {
-            /* (input, expected) */
-            return arrayListOf(
-                arrayOf("calabreso@gmail.pk", true),
-                arrayOf("Liminado@gmail.com", true),
-                arrayOf("123456", false),
-                arrayOf("ludimilo@gmail.com", true),
-                arrayOf("limonado", false),
-                arrayOf(".,tartarugo", false),
-                arrayOf("FantoLaranjo@gmail.com", true),
-                arrayOf("@.Taturano", false),
-                arrayOf("lasanho", false),
-                arrayOf("Chicleto@gmail.com", true),
-                arrayOf("TheAmusedGamer@gmail.com", true),
-                arrayOf("@abc@.com", false),
-                arrayOf("Canjico.com", false),
-                arrayOf("TheFascinatedGamer@gmail.com", true),
-                arrayOf("https://google.com", false),
-                arrayOf("muçarelo", false),
-                arrayOf("Capivaro@gmail.co", true),
-            )
-        }
+    @ParameterizedTest
+    @ArgumentsSource(EmailArgumentsProvider::class)
+    fun `test validate email`(email: String, isValid: Boolean) {
+        val result = emailValidator(email)
+        Assertions.assertEquals(result, isValid)
     }
 
-    @Test
-    fun `test validate email`() {
-        val result = emailValidator(email)
-
-        Assert.assertEquals(result, expected)
+    private class EmailArgumentsProvider : ArgumentsProvider {
+        override fun provideArguments(context: ExtensionContext?): Stream<out Arguments> {
+            return Stream.of(
+                Arguments.of("calabreso@gmail.pk", true),
+                Arguments.of("Liminado@gmail.com", true),
+                Arguments.of("123456", false),
+                Arguments.of("ludimilo@gmail.com", true),
+                Arguments.of("limonado", false),
+                Arguments.of(".,tartarugo", false),
+                Arguments.of("FantoLaranjo@gmail.com", true),
+                Arguments.of("@.Taturano", false),
+                Arguments.of("lasanho", false),
+                Arguments.of("Chicleto@gmail.com", true),
+                Arguments.of("TheAmusedGamer@gmail.com", true),
+                Arguments.of("@abc@.com", false),
+                Arguments.of("Canjico.com", false),
+                Arguments.of("TheFascinatedGamer@gmail.com", true),
+                Arguments.of("https://google.com", false),
+                Arguments.of("muçarelo", false),
+                Arguments.of("Capivaro@gmail.co", true)
+            )
+        }
     }
 }

@@ -1,51 +1,45 @@
 package com.devlemos.parameterizedtestandroid
 
-import junit.framework.TestCase.assertEquals
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.ArgumentsProvider
+import org.junit.jupiter.params.provider.ArgumentsSource
+import java.util.stream.Stream
 
-@RunWith(Parameterized::class)
-class PasswordValidatorTest(
-    private val password: String,
-    private val expected: Boolean
-) {
+class PasswordValidatorTest {
 
-    lateinit var validatePassword: PasswordValidator
+    private lateinit var passwordValidator: PasswordValidator
 
-    @Before
+    @BeforeEach
     fun setUp() {
-        validatePassword = PasswordValidator()
+        passwordValidator = PasswordValidator()
     }
 
-    companion object {
-        @JvmStatic
-        @Parameterized.Parameters(
-            name = "when password is {0}, then we are getting {1}"
-        )
-        fun getValidateEmailResult(): Iterable<Array<Any>> {
-            /* (input, expected) */
-            return arrayListOf(
-                arrayOf("frigideiro", false),
-                arrayOf("12345678", false),
-                arrayOf("Lagosto1234", true),
-                arrayOf("Creatino1234", true),
-                arrayOf("agiotoD1234", true),
-                arrayOf("12345Ab", false),
-                arrayOf("discoteco", false),
-                arrayOf("./,'./,;./,;.,", false),
-                arrayOf("LamparinoAbcd1", true),
-                arrayOf("@.sinuco", false),
-                arrayOf("cabido", false)
+    @ParameterizedTest
+    @ArgumentsSource(PasswordArgumentsProvider::class)
+    fun `test validate password`(password: String, expected: Boolean) {
+        val result = passwordValidator(password)
+        Assertions.assertEquals(result, expected)
+    }
+
+    private class PasswordArgumentsProvider : ArgumentsProvider {
+        override fun provideArguments(context: ExtensionContext?): Stream<out Arguments> {
+            return Stream.of(
+                Arguments.of("frigideiro", false),
+                Arguments.of("12345678", false),
+                Arguments.of("Lagosto1234", true),
+                Arguments.of("Creatino1234", true),
+                Arguments.of("agiotoD1234", true),
+                Arguments.of("12345Ab", false),
+                Arguments.of("discoteco", false),
+                Arguments.of("./,'./,;./,;.,", false),
+                Arguments.of("LamparinoAbcd1", true),
+                Arguments.of("@.sinuco", false),
+                Arguments.of("cabido", false)
             )
         }
-    }
-
-    @Test
-    fun `test validate password`() {
-        val result = validatePassword(password = password)
-
-        assertEquals(result, expected)
     }
 }
