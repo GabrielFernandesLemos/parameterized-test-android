@@ -8,7 +8,7 @@ Leia a documentação do JUnit5 [aqui](https://junit.org/junit5/docs/current/use
 
 ---
 
-# Parameterized Tests with JUnit4 and JUnit on Android
+# Parameterized Tests with JUnit4 and JUnit5 on Android
 
 A repository to demonstrate JUnit5 parameterized tests on Android.
 
